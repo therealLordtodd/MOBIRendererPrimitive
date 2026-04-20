@@ -17,14 +17,14 @@ let package = Package(
     ],
     dependencies: [
         .package(path: "../ContentModelPrimitive"),
-        .package(path: "../PreviewPrimitive"),
+        .package(path: "../HTMLRendererPrimitive"),
     ],
     targets: [
         .target(
             name: "MOBIRendererPrimitive",
             dependencies: [
                 .product(name: "ContentModelPrimitive", package: "ContentModelPrimitive"),
-                .product(name: "FilePreviewPrimitiveHTML", package: "PreviewPrimitive"),
+                .product(name: "HTMLRendererPrimitive", package: "HTMLRendererPrimitive"),
             ],
             path: "Sources/MOBIRendererPrimitive"
         ),

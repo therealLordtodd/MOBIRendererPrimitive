@@ -1,7 +1,7 @@
 import ContentModelPrimitive
 import CryptoKit
-import FilePreviewPrimitiveHTML
 import Foundation
+import HTMLRendererPrimitive
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -40,7 +40,7 @@ public struct MOBIRenderView: View {
             }
 
             if let chapter = currentChapter {
-                HTMLPreviewView(
+                HTMLRenderDocumentView(
                     document: chapter.renderedDocument,
                     revealKey: chapterRevealKey(for: chapter.id)
                 )
@@ -70,7 +70,7 @@ public struct MOBIRenderView: View {
 
             if let pendingRevealTarget,
                pendingRevealTarget.chapterID == chapter.id {
-                await HTMLPreviewRevealCoordinator.reveal(
+                await HTMLRenderRevealCoordinator.reveal(
                     pendingRevealTarget.targetID,
                     in: chapterRevealKey(for: chapter.id)
                 )
@@ -79,7 +79,7 @@ public struct MOBIRenderView: View {
                 }
             }
 
-            let stream = HTMLPreviewSelectionCoordinator.stream(
+            let stream = HTMLRenderSelectionCoordinator.stream(
                 for: chapterRevealKey(for: chapter.id)
             )
             for await selection in stream {

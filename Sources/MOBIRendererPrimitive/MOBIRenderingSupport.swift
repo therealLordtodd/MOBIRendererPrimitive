@@ -1,5 +1,5 @@
-import FilePreviewPrimitiveHTML
 import Foundation
+import HTMLRendererPrimitive
 
 public struct MOBIRenderedChapter: Sendable, Identifiable {
     public let id: String
@@ -7,7 +7,7 @@ public struct MOBIRenderedChapter: Sendable, Identifiable {
     public let title: String
     public let text: String
     public let rootTargetID: String
-    public let renderedDocument: HTMLPreviewDocument
+    public let renderedDocument: HTMLRenderDocument
 }
 
 public struct MOBIRenderedBook: Sendable {
@@ -156,8 +156,8 @@ private enum MOBIParsingSupport {
             in: ensureHTMLDocument(chapter.htmlContent),
             rootTargetID: rootTargetID
         )
-        let policy = HTMLPreviewPolicy.default
-        let sanitizedHTML = HTMLPreviewSupport.sanitize(
+        let policy = HTMLRenderPolicy.default
+        let sanitizedHTML = HTMLRenderSupport.sanitize(
             documentHTML,
             policy: policy
         )
@@ -168,12 +168,12 @@ private enum MOBIParsingSupport {
             title: chapter.title,
             text: chapter.content,
             rootTargetID: rootTargetID,
-            renderedDocument: HTMLPreviewDocument(
+            renderedDocument: HTMLRenderDocument(
                 source: documentHTML,
                 sanitizedHTML: sanitizedHTML,
                 limitations: [
-                    .scriptsBlocked,
-                    .remoteBlocked,
+                    HTMLRenderLimitation.scriptsBlocked,
+                    HTMLRenderLimitation.remoteBlocked,
                 ]
             )
         )

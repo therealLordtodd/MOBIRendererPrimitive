@@ -1,6 +1,6 @@
 import ContentModelPrimitive
 import Foundation
-import FilePreviewPrimitiveHTML
+import HTMLRendererPrimitive
 
 private struct MOBIDocumentTOCProvider: TOCProvider, Sendable {
     let documentID: DocumentID
