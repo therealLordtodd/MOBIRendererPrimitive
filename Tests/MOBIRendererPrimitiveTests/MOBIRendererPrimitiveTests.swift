@@ -70,6 +70,53 @@ struct MOBIRendererPrimitiveTests {
 
         #expect(matches.isEmpty == false)
     }
+
+    @Test func explicitURLProvidersHonorCallerOwnedDocumentID() async throws {
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("sample-\(UUID().uuidString).mobi")
+        try makeMinimalMOBIData(
+            html: """
+            <html><body>
+            <h1>Overview</h1><p>Hello world.</p>
+            <mbp:pagebreak/>
+            <h1>Appendix</h1><p>More text.</p>
+            </body></html>
+            """
+        ).write(to: url)
+        defer { try? FileManager.default.removeItem(at: url) }
+
+        let documentID = ContentIdentity("mobi-doc")
+        let toc = try #require(
+            MOBIRendererPrimitiveSupport.tocProvider(
+                documentID: documentID,
+                url: url
+            )
+        )
+        let search = try #require(
+            MOBIRendererPrimitiveSupport.documentSearchProvider(
+                documentID: documentID,
+                url: url
+            )
+        )
+        let surface = try #require(
+            MOBIRendererPrimitiveSupport.annotationSurfaceProvider(
+                documentID: documentID,
+                revealKey: "mobi-reveal",
+                url: url
+            )
+        )
+
+        let nodes = try await toc.tableOfContents()
+        #expect(nodes.first?.id.rawValue.contains("mobi-doc") == true)
+
+        var matches: [SearchMatch] = []
+        for try await match in search.search(query: SearchQuery(text: "More")) {
+            matches.append(match)
+        }
+        #expect(matches.first?.id.rawValue.contains("mobi-doc") == true)
+
+        let coordinate = await surface.coordinate(for: try #require(nodes.last?.anchor))
+        #expect(coordinate?.y == 1)
+    }
 }
 
 private func makeMinimalMOBIData(

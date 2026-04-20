@@ -159,11 +159,23 @@ public enum MOBIRendererPrimitiveSupport {
             return nil
         }
 
+        let revealKey = url.absoluteString
+        return context(
+            url: url,
+            documentID: ContentIdentity(revealKey),
+            revealKey: revealKey
+        )
+    }
+
+    static func context(
+        url: URL,
+        documentID: DocumentID,
+        revealKey: String
+    ) -> Context? {
         guard let book = try? MOBIRenderingSupport.loadBook(at: url) else {
             return nil
         }
 
-        let revealKey = url.absoluteString
         let chapterOrder = Dictionary(
             uniqueKeysWithValues: book.chapters.map { chapter in
                 (chapter.id, chapter.index)
@@ -173,7 +185,7 @@ public enum MOBIRendererPrimitiveSupport {
         return Context(
             book: book,
             url: url,
-            documentID: ContentIdentity(revealKey),
+            documentID: documentID,
             revealKey: revealKey,
             chapterOrder: chapterOrder
         )

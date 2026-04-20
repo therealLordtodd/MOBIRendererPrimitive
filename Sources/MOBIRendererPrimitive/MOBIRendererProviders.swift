@@ -269,6 +269,26 @@ private final class MOBIPreviewSelectionRegistry {
 
 extension MOBIRendererPrimitiveSupport {
     public static func annotationSurfaceProvider(
+        documentID: DocumentID,
+        revealKey: String,
+        url: URL
+    ) -> (any AnnotationSurfaceProvider)? {
+        guard let context = context(
+            url: url,
+            documentID: documentID,
+            revealKey: revealKey
+        ) else {
+            return nil
+        }
+
+        return MOBIDocumentAnnotationSurfaceProvider(
+            documentID: context.documentID,
+            revealKey: context.revealKey,
+            chapterOrder: context.chapterOrder
+        )
+    }
+
+    public static func annotationSurfaceProvider(
         for source: ContentRenderSource
     ) -> (any AnnotationSurfaceProvider)? {
         guard let context = context(for: source) else {
@@ -279,6 +299,39 @@ extension MOBIRendererPrimitiveSupport {
             documentID: context.documentID,
             revealKey: context.revealKey,
             chapterOrder: context.chapterOrder
+        )
+    }
+
+    public static func tocProvider(
+        documentID: DocumentID,
+        url: URL
+    ) -> (any TOCProvider)? {
+        guard let context = context(
+            url: url,
+            documentID: documentID,
+            revealKey: url.absoluteString
+        ),
+        context.book.chapters.isEmpty == false else {
+            return nil
+        }
+
+        let nodes = context.book.chapters.map { chapter in
+            TOCNode(
+                id: ContentIdentity("\(context.documentID.rawValue):\(chapter.id)"),
+                title: chapter.title,
+                anchor: .text(
+                    wholeChapterTextAnchor(
+                        chapterID: chapter.id,
+                        targetID: chapter.rootTargetID,
+                        text: chapter.text
+                    )
+                )
+            )
+        }
+
+        return MOBIDocumentTOCProvider(
+            documentID: context.documentID,
+            nodes: nodes
         )
     }
 
@@ -307,6 +360,25 @@ extension MOBIRendererPrimitiveSupport {
         return MOBIDocumentTOCProvider(
             documentID: context.documentID,
             nodes: nodes
+        )
+    }
+
+    public static func documentSearchProvider(
+        documentID: DocumentID,
+        url: URL
+    ) -> (any DocumentSearchProvider)? {
+        guard let context = context(
+            url: url,
+            documentID: documentID,
+            revealKey: url.absoluteString
+        ),
+        context.book.chapters.isEmpty == false else {
+            return nil
+        }
+
+        return MOBIDocumentSearchProvider(
+            documentID: context.documentID,
+            chapters: context.book.chapters
         )
     }
 
