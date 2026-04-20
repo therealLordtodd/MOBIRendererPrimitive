@@ -16,4 +16,20 @@ public enum MOBIRendererPrimitiveFeature: ContentRendererEntry {
 
         return AnyView(view)
     }
+
+    public static func annotationSurfaceProvider(
+        for source: ContentRenderSource
+    ) -> (any AnnotationSurfaceProvider)? {
+        MOBIRendererPrimitiveSupport.annotationSurfaceProvider(for: source)
+    }
+
+    public static func tocProvider(for source: ContentRenderSource) -> (any TOCProvider)? {
+        MOBIRendererPrimitiveSupport.tocProvider(for: source)
+    }
+
+    public static func documentSearchProvider(
+        for source: ContentRenderSource
+    ) -> (any DocumentSearchProvider)? {
+        MOBIRendererPrimitiveSupport.documentSearchProvider(for: source)
+    }
 }

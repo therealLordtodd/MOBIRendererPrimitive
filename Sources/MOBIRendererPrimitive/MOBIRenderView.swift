@@ -6,17 +6,22 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 public struct MOBIRenderView: View {
-    private let book: MOBIRenderedBook
+    private let context: MOBIRendererPrimitiveSupport.Context
 
     @State private var currentChapterID: String
+    @State private var pendingRevealTarget: MOBIRevealTarget?
 
     public init?(source: ContentRenderSource) {
         guard let context = MOBIRendererPrimitiveSupport.context(for: source) else {
             return nil
         }
 
-        self.book = context.book
+        self.context = context
         _currentChapterID = State(initialValue: context.book.chapters.first?.id ?? "")
+    }
+
+    private var book: MOBIRenderedBook {
+        context.book
     }
 
     private var currentChapter: MOBIRenderedChapter? {
@@ -35,7 +40,10 @@ public struct MOBIRenderView: View {
             }
 
             if let chapter = currentChapter {
-                HTMLPreviewView(document: chapter.renderedDocument)
+                HTMLPreviewView(
+                    document: chapter.renderedDocument,
+                    revealKey: chapterRevealKey(for: chapter.id)
+                )
                     .id(chapter.id)
             } else {
                 ContentUnavailableView(
@@ -45,6 +53,90 @@ public struct MOBIRenderView: View {
                 )
             }
         }
+        .task(id: context.revealKey) {
+            for await target in MOBIPreviewRevealCoordinator.stream(for: context.revealKey) {
+                pendingRevealTarget = target
+                if context.chapterOrder[target.chapterID] != nil {
+                    currentChapterID = target.chapterID
+                }
+            }
+        }
+        .task(id: currentChapterID) {
+            await MOBIPreviewSelectionCoordinator.publish(nil, in: context.revealKey)
+
+            guard let chapter = currentChapter else {
+                return
+            }
+
+            if let pendingRevealTarget,
+               pendingRevealTarget.chapterID == chapter.id {
+                await HTMLPreviewRevealCoordinator.reveal(
+                    pendingRevealTarget.targetID,
+                    in: chapterRevealKey(for: chapter.id)
+                )
+                if self.pendingRevealTarget?.chapterID == chapter.id {
+                    self.pendingRevealTarget = nil
+                }
+            }
+
+            let stream = HTMLPreviewSelectionCoordinator.stream(
+                for: chapterRevealKey(for: chapter.id)
+            )
+            for await selection in stream {
+                guard !Task.isCancelled else {
+                    return
+                }
+
+                await MOBIPreviewSelectionCoordinator.publish(
+                    translatedSelection(selection, chapter: chapter),
+                    in: context.revealKey
+                )
+            }
+        }
+    }
+
+    private func chapterRevealKey(for chapterID: String) -> String {
+        "\(context.revealKey)::chapter::\(chapterID)"
+    }
+
+    private func translatedSelection(
+        _ selection: ReaderSelectionSnapshot?,
+        chapter: MOBIRenderedChapter
+    ) -> ReaderSelectionSnapshot? {
+        guard var selection else {
+            return nil
+        }
+
+        let translatedAnchor: TextAnchor
+        if case .text(let textAnchor) = selection.anchor {
+            let targetID = textAnchor.containerID
+                ?? textAnchor.selector
+                ?? chapter.rootTargetID
+            let qualifiedID = MOBIRendererPrimitiveSupport.qualifiedContainerID(
+                chapterID: chapter.id,
+                targetID: targetID
+            )
+            translatedAnchor = TextAnchor(
+                startOffset: textAnchor.startOffset,
+                length: textAnchor.length,
+                selector: qualifiedID,
+                quotedText: textAnchor.quotedText,
+                containerID: qualifiedID,
+                prefixContext: textAnchor.prefixContext,
+                suffixContext: textAnchor.suffixContext,
+                representsWholeContainer: textAnchor.representsWholeContainer
+            )
+        } else {
+            translatedAnchor = MOBIRendererPrimitiveSupport.wholeChapterTextAnchor(
+                chapterID: chapter.id,
+                targetID: chapter.rootTargetID,
+                text: selection.text
+            )
+        }
+
+        selection.anchor = .text(translatedAnchor)
+        selection.chapterIndex = chapter.index
+        return selection
     }
 }
 
@@ -52,6 +144,9 @@ public enum MOBIRendererPrimitiveSupport {
     public struct Context: Sendable {
         public let book: MOBIRenderedBook
         public let url: URL
+        public let documentID: DocumentID
+        public let revealKey: String
+        public let chapterOrder: [String: Int]
     }
 
     public static func canRender(_ source: ContentRenderSource) -> Bool {
@@ -68,7 +163,20 @@ public enum MOBIRendererPrimitiveSupport {
             return nil
         }
 
-        return Context(book: book, url: url)
+        let revealKey = url.absoluteString
+        let chapterOrder = Dictionary(
+            uniqueKeysWithValues: book.chapters.map { chapter in
+                (chapter.id, chapter.index)
+            }
+        )
+
+        return Context(
+            book: book,
+            url: url,
+            documentID: ContentIdentity(revealKey),
+            revealKey: revealKey,
+            chapterOrder: chapterOrder
+        )
     }
 
     private static func materializedURL(for source: ContentRenderSource) -> URL? {

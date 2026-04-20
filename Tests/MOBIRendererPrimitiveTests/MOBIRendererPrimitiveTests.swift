@@ -35,6 +35,41 @@ struct MOBIRendererPrimitiveTests {
         #expect(book.chapters.first?.title == "Intro")
         #expect(book.chapters.first?.text.contains("Hello world.") == true)
     }
+
+    @MainActor
+    @Test func mobiFeatureProvidesReaderFacingProviders() async throws {
+        let source = ContentRenderSource.data(
+            makeMinimalMOBIData(
+                html: """
+                <html><body>
+                <h1>Intro</h1><p>Hello world.</p>
+                <mbp:pagebreak/>
+                <h1>Next</h1><p>More text.</p>
+                </body></html>
+                """
+            ),
+            suggestedType: UTType(filenameExtension: "mobi"),
+            filename: "sample.mobi"
+        )
+
+        let toc = try #require(MOBIRendererPrimitiveFeature.tocProvider(for: source))
+        let surface = try #require(MOBIRendererPrimitiveFeature.annotationSurfaceProvider(for: source))
+        let search = try #require(MOBIRendererPrimitiveFeature.documentSearchProvider(for: source))
+
+        let nodes = try await toc.tableOfContents()
+        #expect(nodes.count == 2)
+        #expect(nodes.map(\.title) == ["Intro", "Next"])
+
+        let coordinate = await surface.coordinate(for: nodes[1].anchor)
+        #expect(coordinate?.y == 1)
+
+        var matches: [SearchMatch] = []
+        for try await match in search.search(query: SearchQuery(text: "More")) {
+            matches.append(match)
+        }
+
+        #expect(matches.isEmpty == false)
+    }
 }
 
 private func makeMinimalMOBIData(

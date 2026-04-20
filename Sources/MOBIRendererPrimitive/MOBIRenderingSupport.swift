@@ -6,6 +6,7 @@ public struct MOBIRenderedChapter: Sendable, Identifiable {
     public let index: Int
     public let title: String
     public let text: String
+    public let rootTargetID: String
     public let renderedDocument: HTMLPreviewDocument
 }
 
@@ -150,7 +151,11 @@ private enum MOBIParsingSupport {
     }
 
     private static func renderedChapter(from chapter: ParsedChapter) -> MOBIRenderedChapter {
-        let documentHTML = ensureHTMLDocument(chapter.htmlContent)
+        let rootTargetID = "mobi-chapter-root-\(chapter.index)"
+        let documentHTML = ensureRevealRoot(
+            in: ensureHTMLDocument(chapter.htmlContent),
+            rootTargetID: rootTargetID
+        )
         let policy = HTMLPreviewPolicy.default
         let sanitizedHTML = HTMLPreviewSupport.sanitize(
             documentHTML,
@@ -162,6 +167,7 @@ private enum MOBIParsingSupport {
             index: chapter.index,
             title: chapter.title,
             text: chapter.content,
+            rootTargetID: rootTargetID,
             renderedDocument: HTMLPreviewDocument(
                 source: documentHTML,
                 sanitizedHTML: sanitizedHTML,
@@ -171,6 +177,40 @@ private enum MOBIParsingSupport {
                 ]
             )
         )
+    }
+
+    private static func ensureRevealRoot(
+        in html: String,
+        rootTargetID: String
+    ) -> String {
+        guard let bodyRegex = try? NSRegularExpression(
+            pattern: "(?is)<body\\b([^>]*)>(.*)</body>"
+        ) else {
+            return """
+            <html>
+            <body><div id="\(rootTargetID)">\(html)</div></body>
+            </html>
+            """
+        }
+
+        let nsHTML = html as NSString
+        let fullRange = NSRange(location: 0, length: nsHTML.length)
+        guard let match = bodyRegex.firstMatch(in: html, range: fullRange),
+              match.numberOfRanges == 3 else {
+            return """
+            <html>
+            <body><div id="\(rootTargetID)">\(html)</div></body>
+            </html>
+            """
+        }
+
+        let bodyAttributes = nsHTML.substring(with: match.range(at: 1))
+        let bodyInnerHTML = nsHTML.substring(with: match.range(at: 2))
+        return """
+        <html>
+        <body\(bodyAttributes)><div id="\(rootTargetID)">\(bodyInnerHTML)</div></body>
+        </html>
+        """
     }
 
     private static func parsePDBHeader(_ data: Data) throws -> PDBHeader {
