@@ -6,6 +6,7 @@ What it provides:
 - `MOBIRenderView` for direct host use
 - `MOBIRendererPrimitiveFeature` as a `ContentRendererEntry`
 - first-pass `.mobi` / `.prc` parsing and chapter rendering without a `ReaderKit` dependency
+- composition on `HTMLRendererPrimitive` instead of direct `PreviewPrimitiveHTML` imports
 - first-pass reader-facing seams for chapter TOC, chapter search, and annotation-surface reveal
 
 What it does not provide yet:
