@@ -6,6 +6,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 public struct MOBIRenderView: View {
+    @Environment(\.mobiRenderTheme) private var theme
+
     private let context: MOBIRendererPrimitiveSupport.Context
 
     @State private var currentChapterID: String
@@ -29,7 +31,7 @@ public struct MOBIRenderView: View {
     }
 
     public var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: theme.chapterControlSpacing) {
             if book.chapters.count > 1 {
                 Picker("Chapter", selection: $currentChapterID) {
                     ForEach(book.chapters) { chapter in
