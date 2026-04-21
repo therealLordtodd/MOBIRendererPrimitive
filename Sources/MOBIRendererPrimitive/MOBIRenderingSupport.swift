@@ -1,6 +1,21 @@
 import Foundation
 import HTMLRendererPrimitive
 
+private enum MOBIHTMLRegex {
+    static let body = try! NSRegularExpression(pattern: "(?is)<body\\b([^>]*)>(.*)</body>")
+    static let styleScriptBlock = try! NSRegularExpression(pattern: "(?is)<(?:style|script)[^>]*>[\\s\\S]*?</(?:style|script)>")
+    static let blockOpeningTag = try! NSRegularExpression(pattern: "(?is)<(?:p|div|h[1-6]|li|blockquote|tr)(?:\\s[^>]*)?>")
+    static let blockClosingTag = try! NSRegularExpression(pattern: "(?is)</(?:p|div|h[1-6]|li|blockquote|tr)>")
+    static let lineBreakTag = try! NSRegularExpression(pattern: "(?is)<br\\s*/?>")
+    static let imageTag = try! NSRegularExpression(pattern: "(?is)<img\\b[^>]*\\/?>")
+    static let svgImageTag = try! NSRegularExpression(pattern: "(?is)<image\\b[^>]*\\/?>")
+    static let htmlTag = try! NSRegularExpression(pattern: "<[^>]+>")
+    static let horizontalWhitespace = try! NSRegularExpression(pattern: "[ \\t]+")
+    static let repeatedBlankLines = try! NSRegularExpression(pattern: "[ \\t]*\\n[ \\t]*\\n\\s*")
+    static let decimalEntity = try! NSRegularExpression(pattern: "&#(\\d+);")
+    static let hexadecimalEntity = try! NSRegularExpression(pattern: "&#x([0-9A-Fa-f]+);")
+}
+
 public struct MOBIRenderedChapter: Sendable, Identifiable {
     public let id: String
     public let index: Int
@@ -183,19 +198,9 @@ private enum MOBIParsingSupport {
         in html: String,
         rootTargetID: String
     ) -> String {
-        guard let bodyRegex = try? NSRegularExpression(
-            pattern: "(?is)<body\\b([^>]*)>(.*)</body>"
-        ) else {
-            return """
-            <html>
-            <body><div id="\(rootTargetID)">\(html)</div></body>
-            </html>
-            """
-        }
-
         let nsHTML = html as NSString
         let fullRange = NSRange(location: 0, length: nsHTML.length)
-        guard let match = bodyRegex.firstMatch(in: html, range: fullRange),
+        guard let match = MOBIHTMLRegex.body.firstMatch(in: html, range: fullRange),
               match.numberOfRanges == 3 else {
             return """
             <html>
@@ -526,16 +531,16 @@ private extension Data {
 private extension String {
     func strippingHTMLTags() -> String {
         var text = self
-        text = replace(pattern: "(?is)<(?:style|script)[^>]*>[\\s\\S]*?</(?:style|script)>", in: text, with: "")
-        text = replace(pattern: "(?is)<(?:p|div|h[1-6]|li|blockquote|tr)(?:\\s[^>]*)?>", in: text, with: "\n")
-        text = replace(pattern: "(?is)</(?:p|div|h[1-6]|li|blockquote|tr)>", in: text, with: "\n")
-        text = replace(pattern: "(?is)<br\\s*/?>", in: text, with: "\n")
-        text = replace(pattern: "(?is)<img\\b[^>]*\\/?>", in: text, with: "\u{FFFC}")
-        text = replace(pattern: "(?is)<image\\b[^>]*\\/?>", in: text, with: "\u{FFFC}")
-        text = replace(pattern: "<[^>]+>", in: text, with: "")
+        text = replace(regex: MOBIHTMLRegex.styleScriptBlock, in: text, with: "")
+        text = replace(regex: MOBIHTMLRegex.blockOpeningTag, in: text, with: "\n")
+        text = replace(regex: MOBIHTMLRegex.blockClosingTag, in: text, with: "\n")
+        text = replace(regex: MOBIHTMLRegex.lineBreakTag, in: text, with: "\n")
+        text = replace(regex: MOBIHTMLRegex.imageTag, in: text, with: "\u{FFFC}")
+        text = replace(regex: MOBIHTMLRegex.svgImageTag, in: text, with: "\u{FFFC}")
+        text = replace(regex: MOBIHTMLRegex.htmlTag, in: text, with: "")
         text = decodingHTMLEntities()
-        text = replace(pattern: "[ \\t]+", in: text, with: " ")
-        text = replace(pattern: "[ \\t]*\\n[ \\t]*\\n\\s*", in: text, with: "\n\n")
+        text = replace(regex: MOBIHTMLRegex.horizontalWhitespace, in: text, with: " ")
+        text = replace(regex: MOBIHTMLRegex.repeatedBlankLines, in: text, with: "\n\n")
         return text
     }
 
@@ -556,20 +561,16 @@ private extension String {
             decoded = decoded.replacingOccurrences(of: entity, with: value)
         }
 
-        decoded = decodeNumericEntities(in: decoded, pattern: "&#(\\d+);", radix: 10)
-        decoded = decodeNumericEntities(in: decoded, pattern: "&#x([0-9A-Fa-f]+);", radix: 16)
+        decoded = decodeNumericEntities(in: decoded, regex: MOBIHTMLRegex.decimalEntity, radix: 10)
+        decoded = decodeNumericEntities(in: decoded, regex: MOBIHTMLRegex.hexadecimalEntity, radix: 16)
         return decoded
     }
 
     private func decodeNumericEntities(
         in text: String,
-        pattern: String,
+        regex: NSRegularExpression,
         radix: Int
     ) -> String {
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            return text
-        }
-
         let nsText = text as NSString
         let matches = regex.matches(in: text, range: NSRange(location: 0, length: nsText.length))
         guard !matches.isEmpty else {
@@ -589,10 +590,7 @@ private extension String {
         return mutableText as String
     }
 
-    private func replace(pattern: String, in text: String, with replacement: String) -> String {
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            return text
-        }
+    private func replace(regex: NSRegularExpression, in text: String, with replacement: String) -> String {
         let range = NSRange(text.startIndex..., in: text)
         return regex.stringByReplacingMatches(in: text, range: range, withTemplate: replacement)
     }
