@@ -6,12 +6,13 @@
 
 All project rules, coding standards, and architectural policies are in **`AGENTS.md`** — read it before any implementation work.
 
-Before any **UI work**, also read:
-1. `Style Guide/Unified Standards.md` — Cross-app rules. **Read first.**
-2. `Style Guide/App Style Guide.md` — App-specific tokens and components.
-3. `Style Guide/platform-notes/Apple Apps.md` — If building for Apple platforms.
-   - **Canonical cross-project version:** `/Users/todd/Programming/Vantage/Style Guide/platform-notes/Apple Apps.md`
+Before any **UI work**, read:
+1. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
+2. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
+3. `Style Guide/App Style Guide.md` — if this project has local tokens, components, or layout patterns.
+4. `Style Guide/LOCAL STYLE GUIDE ADDENDUM.md` — if this project has explicit local deviations.
 
+A local `Style Guide/` directory is optional. If it doesn't exist, use the wiki pages only.
 ---
 
 ## Project Overview
@@ -35,8 +36,8 @@ Before any **UI work**, also read:
 
 | Directory | Purpose |
 |-----------|---------|
-| `Style Guide/` | Mandatory design system docs. Read before any UI work. |
-| `Code Review/` | Two-pass review system (15 vectors). Reviews run daily+. |
+| `Style Guide/` | Optional local app style docs layered on top of the wiki source of truth. |
+| `Code Review/` | Optional local code review addenda layered on top of the wiki source of truth. |
 | `docs/plans/` | Design documents and implementation plans. |
 | `docs/project-constitution.md` | Foundational decisions and their reasoning. Update when making hard-to-reverse choices. |
 
@@ -72,15 +73,21 @@ Direct collaboration between Todd and Claude on the active branch. No git worktr
 
 ## Code Review Process
 
-Two-pass, 15-vector review system:
-- **Pass A** (8 vectors): Feature correctness
-- **Pass B** (7 vectors): Code quality
+The Foundation Libraries wiki is the source of truth for code review.
 
-Process: `Code Review/CODE REVIEW PROCESS.md`
-Slash command: `/review`
+- **Pass A** (14 vectors): feature correctness
+- **Pass B** (6 vectors): code quality
+- **System overview:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
+- **Process:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
+- **Vector index:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
+- **Local addenda:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
+- **Slash command:** `/review`
+
+If `Code Review/LOCAL CODE REVIEW ADDENDUM.md` exists in this project, read it after the wiki docs and apply it as a project-specific modification. Ignore legacy local review copies unless the addendum explicitly revives them.
+
+If asked for a review, findings come first. Prioritize bugs, regressions, risks, and missing tests over summaries.
 
 ---
-
 ## AI CLI Tools
 
 | Tool | Path |

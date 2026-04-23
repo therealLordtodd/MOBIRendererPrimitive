@@ -27,8 +27,8 @@ Be direct, concise, and blunt. Go beyond surface meaning. Anticipate intent. Fix
 [PROJECT_NAME]/         ← Project root
 ├── AGENTS.md           ← This file — AI agent instructions
 ├── CLAUDE.md           ← Claude Code auto-loaded config
-├── Code Review/        ← Code review process and vector definitions
-├── Style Guide/        ← Design system documentation
+├── Code Review/        ← Optional project-specific review addenda
+├── Style Guide/        ← Optional local app style profile and addenda
 └── docs/plans/         ← Design docs and implementation plans
 ```
 
@@ -149,7 +149,7 @@ All Apple app targets should include a `Style Check` Run Script build phase that
 
 All logging must use the project's centralized logging facade (`[LOG_FACADE]`). Never use `print()` or raw logging APIs.
 
-> **Full logging architecture:** The 9-file fan-out logging system (AppLog facade → SystemLogSink + FileLogSink + ErrorConsoleLogSink → ErrorLog) is required infrastructure for every Apple platform app. See `Style Guide/platform-notes/Apple Apps.md` — "Logging Architecture" section — for the complete spec, required files, architecture diagram, and usage patterns. Build this before writing any feature code.
+> **Diagnostics and logging baseline:** Apple host apps should follow `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md` — "Diagnostics And Logging Baseline" section — together with this project's logging facade requirements. Build the observability surface before writing feature code when the app owns meaningful runtime state.
 
 **Categories:**
 
@@ -205,34 +205,37 @@ All database writes must go through the project's mutation logging system. No di
 
 ## Code Review Process
 
-Two-pass, 15-vector code review system. Reviews run daily or more often.
+The Foundation Libraries wiki is the source of truth for code review.
 
-- **Pass A** (8 vectors): Feature correctness — security, concurrency, error handling, memory, integration, edge cases, UX, logging
-- **Pass B** (7 vectors): Code quality — database, efficiency, clarity, style guide, complexity, documentation, cross-platform
+- **System overview:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
+- **Process:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
+- **Vector index:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
+- **Local addenda:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
+- **Slash command:** `/review`
 
-Process doc: `Code Review/CODE REVIEW PROCESS.md`
-Vector definitions: `Code Review/code_review_vectors/`
-Slash command: `/review`
+Run the standard two-pass, 20-vector review system from the wiki:
+- **Pass A** (14 vectors): feature correctness
+- **Pass B** (6 vectors): code quality
 
-All findings posted to the **Code Review** module in Plane.
+If this project has `Code Review/LOCAL CODE REVIEW ADDENDUM.md`, read it after the wiki docs and treat it as a project-specific modification to the standard review. Do not use legacy local vector copies as authority unless the local addendum explicitly says to.
 
-**Priority:** Correctness first, then robustness, then craft.
+If asked for a review, findings come first. Prioritize bugs, regressions, risks, and missing tests over summaries.
 
-**Model attribution:** Every Plane issue from a code review must include:
-`Reviewed by: Anthropic / claude-sonnet-4-6`
+**Model attribution:** Every Plane issue posted from a code review must include the reviewing model in the description, e.g. `Reviewed by: Anthropic / claude-sonnet-4-6`
 
 ---
+## Style Guide System
 
-## Style Guide Compliance
+The Foundation Libraries wiki is the source of truth for style guidance.
 
-Before any UI work, read:
+Before UI work, read:
 
-1. `Style Guide/Unified Standards.md` — Cross-app rules. Read first.
-2. `Style Guide/App Style Guide.md` — App-specific tokens and components.
-3. `Style Guide/platform-notes/Apple Apps.md` — If building for Apple platforms.
-4. `Style Guide/platform-notes/Windows Apps.md` — If targeting Windows.
+1. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
+2. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
+3. `Style Guide/App Style Guide.md` — if the project has local tokens, components, or layout patterns.
+4. `Style Guide/LOCAL STYLE GUIDE ADDENDUM.md` — if the project has explicit local deviations.
 
-**Apple HIG reference:** `/Users/todd/Programming/Vantage/Style Guide/platform-notes/Apple Apps.md` — canonical Apple platform rules and visual defaults (cross-project).
+A local `Style Guide/` directory is optional. Do not treat legacy local `Unified Standards.md` or `platform-notes/*` copies as authority.
 
 ### UI Tokenization Rule (from Day 1)
 
@@ -240,10 +243,9 @@ All visual styling must be tokenized from the beginning of the project.
 
 - No raw visual values in production UI code: colors, fonts, spacing, radii, borders, shadows, opacity, animation durations/curves, and layout constants.
 - Define and consume centralized design tokens (for example: color, typography, spacing, corner radius, motion, component sizing).
-- Keep a markdown token reference in the app directory (for example `Design-Tokens.md`) documenting every token name, value, and purpose.
-- When introducing or changing styles, update tokens first, then update the markdown token reference in the same change.
+- Keep local token and component documentation in `Style Guide/App Style Guide.md` when the project owns a real app-specific design system.
+- When introducing or changing styles, update tokens first and update the local style guide in the same change when the project has one.
 
----
 
 ## UI Element Naming Convention
 
