@@ -7,8 +7,8 @@
 All project rules, coding standards, and architectural policies are in **`AGENTS.md`** — read it before any implementation work.
 
 Before any **UI work**, read:
-1. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
-2. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
+1. `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
+2. `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
 3. `Style Guide/App Style Guide.md` — if this project has local tokens, components, or layout patterns.
 4. `Style Guide/LOCAL STYLE GUIDE ADDENDUM.md` — if this project has explicit local deviations.
 
@@ -77,10 +77,10 @@ The Foundation Libraries wiki is the source of truth for code review.
 
 - **Pass A** (14 vectors): feature correctness
 - **Pass B** (6 vectors): code quality
-- **System overview:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
-- **Process:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
-- **Vector index:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
-- **Local addenda:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
+- **System overview:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
+- **Process:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
+- **Vector index:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
+- **Local addenda:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
 - **Slash command:** `/review`
 
 If `Code Review/LOCAL CODE REVIEW ADDENDUM.md` exists in this project, read it after the wiki docs and apply it as a project-specific modification. Ignore legacy local review copies unless the addendum explicitly revives them.
@@ -96,19 +96,15 @@ If asked for a review, findings come first. Prioritize bugs, regressions, risks,
 | Codex CLI | `/Users/todd/.local/bin/codex` |
 ---
 
-## Plane API
+## Project Operations
 
-Full reference: **`~/.claude/plane-api.md`**
+Shared task, support, and onboarding operations now live in the Foundation Libraries wiki.
 
-> **Pages require session auth, not API keys.** See `~/.claude/plane-api.md` for the session auth procedure.
+Read:
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/project-ops-system.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/portfolio-doctrine.md`
 
----
-
-## Zammad API
-
-Full reference: **`~/.claude/zammad-api.md`**
-
-Support VM SSH: `ssh todd@support.toddcowing.com`
+Use the wiki page plus any truly local project note instead of duplicated service boilerplate.
 
 ---
 

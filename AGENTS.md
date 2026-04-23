@@ -34,102 +34,15 @@ Be direct, concise, and blunt. Go beyond surface meaning. Anticipate intent. Fix
 
 ---
 
-## Support VM — `support.toddcowing.com`
+## Project Operations
 
-This VM hosts the support stack and the support-bot that bridges bug intake into Plane.
+The Foundation Libraries wiki is the source of truth for shared project-operations guidance.
 
-**What it's for:**
-- **Zammad** — support intake and ticketing (`https://support.toddcowing.com`)
-- **Plane** — project tracking (`https://project.toddcowing.com`)
-- **support-bot** — reads new Zammad tickets and creates Plane issues automatically
+Read:
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/project-ops-system.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/portfolio-doctrine.md`
 
-**SSH access:**
-```bash
-ssh todd@support.toddcowing.com   # key: ~/.ssh/id_ed25519
-```
-
-Bot logs: `/var/log/support-bot.log`
-
-If debugging intake failures, check the VM time (UTC vs Pacific) before interpreting timestamps.
-
----
-
-## Zammad — Support Ticket Intake
-
-Zammad is the support ticketing system. Users submit bugs via email or web form; tickets are automatically forwarded to Plane via the support-bot.
-
-**URL:** https://support.toddcowing.com
-**Intake email:** intake@toddcowing.com
-**API reference:** `~/.claude/zammad-api.md`
-
-**Credentials** — source before making API calls:
-```bash
-source ~/.claude/credentials.env
-# Provides: $ZAMMAD_API_KEY, $ZAMMAD_BASE_URL
-```
-
-**Common agent use cases:**
-- Read open tickets to understand incoming bugs
-- Add an internal note to a ticket (e.g. "Fixed in commit abc123")
-- Close or update ticket status after a fix ships
-- Cross-reference a Plane issue with its originating Zammad ticket
-
-Full API reference: `~/.claude/zammad-api.md`
-
----
-
-## Project Management — Plane
-
-**URL:** https://project.toddcowing.com
-**Workspace:** `bang-and-co`
-**Project:** [PROJECT_NAME] (`[PLANE_IDENTIFIER]`)
-**Project ID:** `[PLANE_PROJECT_ID]`
-
-Use Plane to check current issues before starting work, update status as work progresses, and file new issues when you discover bugs or scope gaps.
-
-**Credentials:**
-```bash
-source ~/.claude/credentials.env
-# Provides: $PLANE_API_KEY, $PLANE_BASE_URL
-```
-
-Full API reference: `~/.claude/plane-api.md`.
-
-### Plane Onboarding (New Project Setup)
-
-When setting up a new project for the first time:
-
-**1. Create the Plane project** in the `bang-and-co` workspace:
-```bash
-source ~/.claude/credentials.env
-curl -X POST "$PLANE_BASE_URL/api/v1/workspaces/bang-and-co/projects/" \
-  -H "X-API-Key: $PLANE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "name": "[PROJECT_NAME]",
-    "identifier": "[PLANE_IDENTIFIER]",
-    "description": "[PROJECT_DESCRIPTION]",
-    "network": 2
-  }'
-```
-
-**2. Note the returned `id`** — that is your `[PLANE_PROJECT_ID]`. Fill it in everywhere in this file and in `~/.claude/plane-api.md`.
-
-**3. Get state IDs** for the new project and fill them in `~/.claude/plane-api.md`:
-```bash
-curl -s -H "X-API-Key: $PLANE_API_KEY" \
-  "$PLANE_BASE_URL/api/v1/workspaces/bang-and-co/projects/[PLANE_PROJECT_ID]/states/"
-```
-
-**4. Create a "Code Review" module** for housing review findings:
-```bash
-curl -X POST "$PLANE_BASE_URL/api/v1/workspaces/bang-and-co/projects/[PLANE_PROJECT_ID]/modules/" \
-  -H "X-API-Key: $PLANE_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Code Review", "status": "backlog"}'
-```
-
-> **Pages require session auth, not API keys.** See `~/.claude/plane-api.md` for the session auth procedure.
+Project-local docs should not duplicate the shared support / task / onboarding doctrine. Keep only project-specific operational exceptions or identifiers locally.
 
 ---
 
@@ -149,7 +62,7 @@ All Apple app targets should include a `Style Check` Run Script build phase that
 
 All logging must use the project's centralized logging facade (`[LOG_FACADE]`). Never use `print()` or raw logging APIs.
 
-> **Diagnostics and logging baseline:** Apple host apps should follow `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md` — "Diagnostics And Logging Baseline" section — together with this project's logging facade requirements. Build the observability surface before writing feature code when the app owns meaningful runtime state.
+> **Diagnostics and logging baseline:** Apple host apps should follow `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-observability-baseline.md` together with this project's logging facade requirements. Build the observability surface before writing feature code when the app owns meaningful runtime state.
 
 **Categories:**
 
@@ -203,14 +116,30 @@ All database writes must go through the project's mutation logging system. No di
 
 ---
 
+## Testing System
+
+The Foundation Libraries wiki is the source of truth for shared testing doctrine.
+
+Read:
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/testing-system.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/post-coding-testing.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/post-coding-ui-testing.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/visual-sweep-doctrine.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/testing-audit-prompt.md`
+- `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/testing-historical-perspectives.md`
+
+Keep only truly local testing harness notes in project docs.
+
+---
+
 ## Code Review Process
 
 The Foundation Libraries wiki is the source of truth for code review.
 
-- **System overview:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
-- **Process:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
-- **Vector index:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
-- **Local addenda:** `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
+- **System overview:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-system.md`
+- **Process:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-process.md`
+- **Vector index:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/indexes/code-review-vectors.md`
+- **Local addenda:** `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/code-review-local-addenda.md`
 - **Slash command:** `/review`
 
 Run the standard two-pass, 20-vector review system from the wiki:
@@ -221,7 +150,7 @@ If this project has `Code Review/LOCAL CODE REVIEW ADDENDUM.md`, read it after t
 
 If asked for a review, findings come first. Prioritize bugs, regressions, risks, and missing tests over summaries.
 
-**Model attribution:** Every Plane issue posted from a code review must include the reviewing model in the description, e.g. `Reviewed by: Anthropic / claude-sonnet-4-6`
+**Model attribution:** Every review finding recorded in the current issue/task system must include the reviewing model in the description, e.g. `Reviewed by: Anthropic / claude-sonnet-4-6`
 
 ---
 ## Style Guide System
@@ -230,8 +159,8 @@ The Foundation Libraries wiki is the source of truth for style guidance.
 
 Before UI work, read:
 
-1. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
-2. `/Users/todd/Google Drive/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
+1. `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/style-guide-system.md`
+2. `/Users/todd/Library/CloudStorage/GoogleDrive-todd@cowingfamily.com/My Drive/The Commons/Libraries/Foundation Libraries/operations/apple-platform-ui-style-guide.md`
 3. `Style Guide/App Style Guide.md` — if the project has local tokens, components, or layout patterns.
 4. `Style Guide/LOCAL STYLE GUIDE ADDENDUM.md` — if the project has explicit local deviations.
 
