@@ -264,6 +264,18 @@ When you find documentation or clarity issues, fix them proactively without wait
 
 Direct collaboration between Todd and Claude on the active branch. Work directly in the repository unless otherwise specified.
 
+### Session-End Commit Check
+
+**Before ending any session**, run `git status` in the project repo. If there are uncommitted changes, commit them before wrapping up. Uncommitted work accumulating across sessions is a recurring problem — don't let it happen.
+
+---
+
+## AI CLI Tools
+
+| Tool | Path |
+|------|------|
+| Claude Code CLI | `/Users/todd/.local/bin/claude` |
+| Codex CLI | `/Users/todd/.local/bin/codex` |
 
 ---
 
@@ -315,6 +327,16 @@ POST /session/wrap/end
 - If anything non-trivial from the current session has not been recorded yet, commit it with `POST /memory/remember` first.
 - Then call `POST /session/wrap/end`.
 - Treat this as part of the shutdown checklist, not optional cleanup. Do not wait until after compaction to save important reasoning.
+
+
+### Context-Loss Checkpoints
+
+Context rollovers (compaction) can happen at any time without warning — there is no pre-compaction signal. To protect against memory loss:
+
+- **After completing each major task or milestone**, immediately `/remember` the outcome, approach taken, and any non-obvious decisions — don't batch these for session end
+- **Before dispatching subagents or starting context-heavy operations**, record what you've accomplished so far and what remains — these operations consume large amounts of context and increase rollover risk
+- **After any commit**, record a brief memory if the committed work involved non-obvious decisions or patterns worth preserving
+- **Think of `/remember` as a save point in a game** — save often, especially before boss fights (big operations). You can't predict when the power will go out.
 
 ### What to Remember
 - **Decisions** — why X was chosen over Y
