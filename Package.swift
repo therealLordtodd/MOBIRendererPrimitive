@@ -6,7 +6,7 @@ let package = Package(
     name: "MOBIRendererPrimitive",
     platforms: [
         .macOS(.v14),
-        .iOS(.v17),
+        .iOS(.v15),
         .visionOS(.v1),
     ],
     products: [
