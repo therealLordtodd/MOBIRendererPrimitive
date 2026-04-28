@@ -357,6 +357,6 @@ POST /memory/resolveConflict
 
 ## Primitives-First Development
 
-**Before building any new feature or component**, check `/Users/todd/Programming/Packages/` for existing primitives and kits that already solve part of the problem. Browse the directory listing — the names are descriptive.
+**Before building any new feature or component**, check `/Users/todd/Building - Apple/Packages/` for existing primitives and kits that already solve part of the problem. Browse the directory listing — the names are descriptive.
 
 **During every design and implementation task**, actively ask: *"Are parts of what I'm building legitimate candidates for new primitives or kits in the shared library?"* If yes, extract them. We are aggressively growing this shared library through real app development. Every app is both a consumer of primitives and a proving ground that justifies their existence with real usage and bug testing.
