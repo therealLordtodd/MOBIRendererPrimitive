@@ -33,7 +33,7 @@ public struct MOBIRenderView: View {
     public var body: some View {
         VStack(alignment: .leading, spacing: theme.chapterControlSpacing) {
             if book.chapters.count > 1 {
-                Picker("Chapter", selection: $currentChapterID) {
+                Picker(MOBIRendererLocalization.chapterPickerTitle, selection: $currentChapterID) {
                     ForEach(book.chapters) { chapter in
                         Text(chapter.title).tag(chapter.id)
                     }
@@ -49,9 +49,9 @@ public struct MOBIRenderView: View {
                     .id(chapter.id)
             } else {
                 ContentUnavailableView(
-                    "No MOBI Content",
+                    MOBIRendererLocalization.noContentTitle,
                     systemImage: "book.closed",
-                    description: Text("This MOBI file did not produce any readable chapters.")
+                    description: Text(MOBIRendererLocalization.noContentDescription)
                 )
             }
         }

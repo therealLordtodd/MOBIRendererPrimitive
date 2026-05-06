@@ -9,7 +9,7 @@ import UniformTypeIdentifiers
             .frame(minHeight: 520)
             .padding()
     } else {
-        ContentUnavailableView("Cannot render preview MOBI", systemImage: "book.closed")
+        ContentUnavailableView(MOBIRendererLocalization.previewFailureTitle, systemImage: "book.closed")
     }
 }
 

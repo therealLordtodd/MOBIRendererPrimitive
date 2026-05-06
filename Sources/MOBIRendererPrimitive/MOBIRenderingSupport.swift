@@ -505,15 +505,15 @@ public enum MOBIParserError: Error, LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .invalidFile:
-            String(localized: "Not a valid MOBI/PRC file")
+            MOBIRendererLocalization.invalidFileError
         case .unsupportedCompression(let type):
-            String(localized: "Unsupported compression type: \(type)")
+            MOBIRendererLocalization.unsupportedCompressionError(type: type)
         case .unsupportedEncryption:
-            String(localized: "DRM-encrypted MOBI files are not supported")
+            MOBIRendererLocalization.unsupportedEncryptionError
         case .noTextContent:
-            String(localized: "No readable text content found")
+            MOBIRendererLocalization.noTextContentError
         case .malformedHeader(let detail):
-            String(localized: "Malformed MOBI header: \(detail)")
+            MOBIRendererLocalization.malformedHeaderError(detail: detail)
         }
     }
 }

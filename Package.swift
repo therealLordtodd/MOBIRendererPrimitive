@@ -4,6 +4,7 @@ import PackageDescription
 
 let package = Package(
     name: "MOBIRendererPrimitive",
+    defaultLocalization: "en",
     platforms: [
         .macOS(.v14),
         .iOS(.v17),
@@ -25,7 +26,10 @@ let package = Package(
                 .product(name: "ContentModelPrimitive", package: "ContentModelPrimitive"),
                 .product(name: "HTMLRendererPrimitive", package: "HTMLRendererPrimitive"),
             ],
-            path: "Sources/MOBIRendererPrimitive"
+            path: "Sources/MOBIRendererPrimitive",
+            resources: [
+                .process("Resources"),
+            ]
         ),
         .testTarget(
             name: "MOBIRendererPrimitiveTests",
