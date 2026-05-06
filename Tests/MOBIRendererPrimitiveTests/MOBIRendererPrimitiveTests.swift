@@ -117,6 +117,14 @@ struct MOBIRendererPrimitiveTests {
         let coordinate = await surface.coordinate(for: try #require(nodes.last?.anchor))
         #expect(coordinate?.y == 1)
     }
+
+    @Test func parserErrorDescriptionsAreLocalizedStrings() {
+        #expect(MOBIParserError.invalidFile.errorDescription == "Not a valid MOBI/PRC file")
+        #expect(MOBIParserError.unsupportedCompression(99).errorDescription == "Unsupported compression type: 99")
+        #expect(MOBIParserError.unsupportedEncryption.errorDescription == "DRM-encrypted MOBI files are not supported")
+        #expect(MOBIParserError.noTextContent.errorDescription == "No readable text content found")
+        #expect(MOBIParserError.malformedHeader("Record table overflow").errorDescription == "Malformed MOBI header: Record table overflow")
+    }
 }
 
 private func makeMinimalMOBIData(
