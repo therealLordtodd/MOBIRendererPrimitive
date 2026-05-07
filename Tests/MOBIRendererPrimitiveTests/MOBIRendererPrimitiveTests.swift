@@ -126,6 +126,7 @@ struct MOBIRendererPrimitiveTests {
                 == "This MOBI file did not produce any readable chapters."
         )
         #expect(MOBIRendererLocalization.previewFailureTitle == "Cannot render preview MOBI")
+        #expect(MOBIRendererLocalization.fallbackChapterTitle(4) == "Chapter 4")
         #expect(MOBIParserError.invalidFile.errorDescription == "Not a valid MOBI/PRC file")
         #expect(MOBIParserError.unsupportedCompression(99).errorDescription == "Unsupported compression type: 99")
         #expect(MOBIParserError.unsupportedEncryption.errorDescription == "DRM-encrypted MOBI files are not supported")

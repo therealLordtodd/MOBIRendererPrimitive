@@ -437,7 +437,8 @@ private enum MOBIParsingSupport {
 
             chapters.append(
                 ParsedChapter(
-                    title: extractChapterTitle(from: chapterHTML) ?? "Chapter \(chapters.count + 1)",
+                    title: extractChapterTitle(from: chapterHTML)
+                        ?? MOBIRendererLocalization.fallbackChapterTitle(chapters.count + 1),
                     index: chapters.count,
                     content: plainText,
                     htmlContent: chapterHTML

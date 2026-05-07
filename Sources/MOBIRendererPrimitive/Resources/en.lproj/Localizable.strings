@@ -2,6 +2,7 @@
 "mobiRenderer.empty.title" = "No MOBI Content";
 "mobiRenderer.empty.description" = "This MOBI file did not produce any readable chapters.";
 "mobiRenderer.preview.failure.title" = "Cannot render preview MOBI";
+"mobiRenderer.chapter.fallback.numbered" = "Chapter %d";
 
 "mobiRenderer.error.invalidFile" = "Not a valid MOBI/PRC file";
 "mobiRenderer.error.unsupportedCompression" = "Unsupported compression type: %@";

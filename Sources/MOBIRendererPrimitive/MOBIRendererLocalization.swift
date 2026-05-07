@@ -17,6 +17,10 @@ enum MOBIRendererLocalization {
         localizedString("mobiRenderer.preview.failure.title")
     }
 
+    static func fallbackChapterTitle(_ number: Int) -> String {
+        formattedString("mobiRenderer.chapter.fallback.numbered", number)
+    }
+
     static var invalidFileError: String {
         localizedString("mobiRenderer.error.invalidFile")
     }
